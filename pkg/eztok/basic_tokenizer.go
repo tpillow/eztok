@@ -24,21 +24,19 @@ func BasicTokenizerIsIdentRune(c rune) bool {
 	return unicode.IsDigit(c) || unicode.IsLetter(c) || string(c) == "_"
 }
 
-var BasicTokenizerNodeSemicolon = NewTokenizerNode(
-	func(ctx *TokenizerCtx) bool {
-		return ctx.PeekIs(';')
-	}, func(ctx *TokenizerCtx) (*Token, error) {
-		ctx.Expect(';')
-		return NewToken(BasicTokenTypeSemicolon, nil), nil
-	})
+func NewSingleRuneTokenizerNode(r rune, tokenType TokenType) *TokenizerNode {
+	return NewTokenizerNode(
+		func(ctx *TokenizerCtx) bool {
+			return ctx.PeekIs(r)
+		}, func(ctx *TokenizerCtx) (*Token, error) {
+			ctx.AssertNextIs(r)
+			return NewToken(tokenType, r), nil
+		})
+}
 
-var BasicTokenizerNodeComma = NewTokenizerNode(
-	func(ctx *TokenizerCtx) bool {
-		return ctx.PeekIs(',')
-	}, func(ctx *TokenizerCtx) (*Token, error) {
-		ctx.Expect(',')
-		return NewToken(BasicTokenTypeComma, nil), nil
-	})
+var BasicTokenizerNodeSemicolon = NewSingleRuneTokenizerNode(';', BasicTokenTypeSemicolon)
+
+var BasicTokenizerNodeComma = NewSingleRuneTokenizerNode(';', BasicTokenTypeComma)
 
 var BasicTokenizerNodeInt = NewTokenizerNode(
 	func(ctx *TokenizerCtx) bool {
@@ -72,13 +70,13 @@ var BasicTokenizerNodeStr = NewTokenizerNode(
 	func(ctx *TokenizerCtx) bool {
 		return ctx.PeekIs('"')
 	}, func(ctx *TokenizerCtx) (*Token, error) {
-		ctx.Expect('"')
+		ctx.AssertNextIs('"')
 		// TODO: string escapes
 		unescapedStr := ctx.ReadUntil(func(r rune) bool {
 			return r == '"'
 		})
-		if ctx.Next() != '"' {
-			return nil, fmt.Errorf("unterminated string '%v' at %v", unescapedStr, ctx.AtString())
+		if !ctx.NextIs('"') {
+			return nil, fmt.Errorf("unterminated string '%v'", unescapedStr)
 		}
 		return NewToken(BasicTokenTypeStr, unescapedStr), nil
 	})

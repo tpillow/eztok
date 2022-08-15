@@ -56,7 +56,12 @@ func (ctx *TokenizerCtx) PeekIs(exp rune) bool {
 	return ctx.Peek() == exp
 }
 
-func (ctx *TokenizerCtx) Expect(exp rune) {
+func (ctx *TokenizerCtx) NextIs(exp rune) bool {
+	val := ctx.Next()
+	return val == exp
+}
+
+func (ctx *TokenizerCtx) AssertNextIs(exp rune) {
 	val := ctx.Next()
 	if val != exp {
 		log.Panicf("Expected character '%v' but got '%v' at %v", exp, val, ctx.AtString())
