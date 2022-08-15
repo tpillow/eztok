@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const EOF_RUNE rune = 0
+const EOFRune rune = 0
 
 type ReadUntilFunc func(r rune) bool
 
@@ -19,14 +19,12 @@ type TokenizerCtx struct {
 }
 
 func NewTokenizerCtx(reader *bufio.Reader, origin string) *TokenizerCtx {
-	ctx := &TokenizerCtx{
+	return &TokenizerCtx{
 		Reader:  reader,
 		Origin:  origin,
 		LineNum: 1,
 		ColNum:  0,
 	}
-	ctx.Peek() // Set EOF appropriately
-	return ctx
 }
 
 func (ctx *TokenizerCtx) AtString() string {
@@ -36,7 +34,7 @@ func (ctx *TokenizerCtx) AtString() string {
 func (ctx *TokenizerCtx) Peek() rune {
 	r, _, err := ctx.Reader.ReadRune()
 	if err != nil {
-		return EOF_RUNE
+		return EOFRune
 	}
 	if err := ctx.Reader.UnreadRune(); err != nil {
 		log.Panicf("UnreadRune unexpectedly failed: %v (at %v)", err, ctx.AtString())
@@ -47,7 +45,7 @@ func (ctx *TokenizerCtx) Peek() rune {
 func (ctx *TokenizerCtx) Next() rune {
 	r, _, err := ctx.Reader.ReadRune()
 	if err != nil {
-		return EOF_RUNE
+		return EOFRune
 	}
 	return r
 }
@@ -70,7 +68,7 @@ func (ctx *TokenizerCtx) AssertNextIs(exp rune) {
 
 func (ctx *TokenizerCtx) ReadUntil(untilFunc ReadUntilFunc) string {
 	var sb strings.Builder
-	for r := ctx.Peek(); r != EOF_RUNE && !untilFunc(r); {
+	for r := ctx.Peek(); r != EOFRune && !untilFunc(r); {
 		sb.WriteRune(ctx.Next())
 	}
 	return sb.String()

@@ -35,7 +35,7 @@ func NewTokenizerDef(tokenizerNodes ...*TokenizerNode) *TokenizerDef {
 
 func (td *TokenizerDef) TokenizeWithCtx(ctx *TokenizerCtx) (*TokenizerResult, error) {
 	toks := []*Token{}
-	for !ctx.PeekIs(EOF_RUNE) {
+	for !ctx.PeekIs(EOFRune) {
 		for _, node := range td.TokenizerNodes {
 			if node.Peeker(ctx) {
 				tok, err := node.Parser(ctx)
