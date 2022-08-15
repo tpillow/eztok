@@ -42,7 +42,10 @@ func (td *TokenizerDef) TokenizeWithCtx(ctx *TokenizerCtx) (*TokenizerResult, er
 				if err != nil {
 					return nil, fmt.Errorf("%v at %v", err, ctx.AtString())
 				}
-				toks = append(toks, tok)
+				// Some functions may want to discard tokens (ex: comments) and will return nil to do so
+				if tok != nil {
+					toks = append(toks, tok)
+				}
 			}
 		}
 	}

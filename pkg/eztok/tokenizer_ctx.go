@@ -56,9 +56,11 @@ func (ctx *TokenizerCtx) PeekIs(exp rune) bool {
 	return ctx.Peek() == exp
 }
 
-func (ctx *TokenizerCtx) NextIs(exp rune) bool {
+func (ctx *TokenizerCtx) Expect(exp rune) {
 	val := ctx.Next()
-	return val == exp
+	if val != exp {
+		log.Panicf("Expected character '%v' but got '%v' at %v", exp, val, ctx.AtString())
+	}
 }
 
 func (ctx *TokenizerCtx) ReadUntil(untilFunc ReadUntilFunc) string {
