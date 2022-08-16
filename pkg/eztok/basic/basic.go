@@ -27,6 +27,7 @@ var TokenizerNodeSkipWhitespace = eztok.NewTokenizerNode(
 		return nil, nil
 	})
 
+// TODO: need to ensure it doesn't overlap with float
 var TokenizerNodeInt = eztok.NewTokenizerNode(
 	func(ctx *eztok.TokenizerCtx) bool {
 		r := ctx.Peek()
@@ -39,14 +40,17 @@ var TokenizerNodeInt = eztok.NewTokenizerNode(
 		// Check for special prefix cases (not using built-in with ParseInt)
 		if first == '0' && ctx.PeekIs('b') {
 			// Binary number disallow +/- prefix: 0b---
+			ctx.AssertNextIs('b')
 			str = ctx.ReadUntilNot(unicode.IsDigit)
 			base = 2
 		} else if first == '0' && ctx.PeekIs('o') {
 			// Octal number disallow +/- prefix: 0o---
+			ctx.AssertNextIs('o')
 			str = ctx.ReadUntilNot(unicode.IsDigit)
 			base = 8
 		} else if first == '0' && ctx.PeekIs('x') {
 			// Hex number disallow +/- prefix: 0x---
+			ctx.AssertNextIs('x')
 			str = ctx.ReadUntilNot(unicode.IsDigit)
 			base = 16
 		} else {

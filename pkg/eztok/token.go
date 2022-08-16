@@ -1,5 +1,7 @@
 package eztok
 
+import "fmt"
+
 // TokenType is just a string that should be unique per token type.
 type TokenType string
 
@@ -20,4 +22,9 @@ func NewToken(tokenType TokenType, value any) *Token {
 		Value:      value,
 		OriginInfo: nil,
 	}
+}
+
+// Formats the Token to a string containing TokenType and Value information.
+func (token *Token) ToString() string {
+	return fmt.Sprintf("Token[%v](%v)", token.TokenType, token.Value)
 }
