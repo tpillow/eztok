@@ -2,29 +2,26 @@ package eztok
 
 import "fmt"
 
-// TokenType is just a string that should be unique per token type.
+// Alias to a string. Represents the type of a Token.
 type TokenType string
 
-// Represents a parsed token.
+// Represents a Token.
 type Token struct {
-	// The type of the token.
+	// The type of this Token.
 	TokenType TokenType
-	// The value of the token.
+	// The value of this Token. May be nil.
 	Value any
-	// Origin information of where the token came from.
-	OriginInfo *OriginInfo
+	// The Origin information of where this Token came from.
+	Origin *Origin
 }
 
-// Creates a new Token with the given TokenType and Value, and nil OriginInfo.
+// Returns a new Token object with the given parameters and a nil Origin.
 func NewToken(tokenType TokenType, value any) *Token {
-	return &Token{
-		TokenType:  tokenType,
-		Value:      value,
-		OriginInfo: nil,
-	}
+	return &Token{tokenType, value, nil}
 }
 
-// Formats the Token to a string containing TokenType and Value information.
+// Returns a string representation of the Token containing its TokenType
+// and Value.
 func (token *Token) ToString() string {
-	return fmt.Sprintf("Token[%v](%v)", token.TokenType, token.Value)
+	return fmt.Sprintf("%v (%v)", token.TokenType, token.Value)
 }
