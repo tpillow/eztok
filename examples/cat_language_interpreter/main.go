@@ -102,18 +102,24 @@ func RunStatement(trav *eztok.TokenTraverser) {
 	// Simulate the expression
 	RunExpression(trav)
 	// Each expression must end with a semicolon.
-	eztok.ExpectTokenTypeIs(trav, TokenTypeSemicolon)
+	if !eztok.PeekTokenTypeIs(trav, TokenTypeSemicolon) {
+		log.Fatalf("Expected a ';' token")
+	}
+	trav.NextToken()
 }
 
 // Interpret an include statement.
 // An include statement is in the form: @include "pathOfCodeToInclude"
 func RunIncludeStatement(trav *eztok.TokenTraverser) {
-	eztok.ExpectTokenTypeIs(trav, TokenTypeInclude)
-	// Get the include path.
-	includeStrTok, err := eztok.ExpectTokenTypeIs(trav, eztok.TokenTypeString)
-	if err != nil {
-		log.Fatalf("Error: %v", err)
+	if !eztok.PeekTokenTypeIs(trav, TokenTypeInclude) {
+		log.Fatalf("Expected a '@include' token")
 	}
+	trav.NextToken()
+	// Get the include path.
+	if !eztok.PeekTokenTypeIs(trav, eztok.TokenTypeString) {
+		log.Fatalf("Expected a 'string' token")
+	}
+	includeStrTok := trav.NextToken()
 	includePath := includeStrTok.Value.(string)
 	// Get the text to include.
 	includeText, ok := availableIncludePathToContent[includePath]
